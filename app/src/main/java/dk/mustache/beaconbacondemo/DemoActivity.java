@@ -71,9 +71,9 @@ public class DemoActivity extends AppCompatActivity implements View.OnClickListe
 
 
     //Test Environment
-    private String baseUrl = "https://app.beaconbacon.io/api/v2/";
+//    private String baseUrl = "https://app.beaconbacon.io/api/v2/";
     //Production Environment
-    //private String baseUrl = "https://wayfindingkkb.dk/api/v2/";
+    private String baseUrl = "https://wayfindingkkb.dk/api/v2/";
 
     private String apiKey = "$2y$10$xNbv82pkfvDT7t4I2cwkLu4csCtd75PIZ/G06LylcMnjwdj/vmJtm";
 
@@ -206,23 +206,25 @@ public class DemoActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void allPlacesAsyncFinished(JsonObject output) {
-        Log.i(BBApplication.TAG, "All places fetched");
+        if(output != null) {
+            Log.i(BBApplication.TAG, "All places fetched");
 
-        //Map JsonObject output to the BBAllPlaces class
-        JsonElement mJson =  new JsonParser().parse(output.toString());
-        BBAllPlaces allPlaces = new Gson().fromJson(mJson, BBAllPlaces.class);
+            //Map JsonObject output to the BBAllPlaces class
+            JsonElement mJson = new JsonParser().parse(output.toString());
+            BBAllPlaces allPlaces = new Gson().fromJson(mJson, BBAllPlaces.class);
 
-        //Sort the Place's floors by Order
-        if(allPlaces.getData() != null) {
-            Collections.sort(allPlaces.getData(), new Comparator<BBPlace>() {
-                @Override
-                public int compare(BBPlace place1, BBPlace place2) {
-                    return place1.getOrder() - place2.getOrder();
-                }
-            });
+            //Sort the Place's floors by Order
+            if (allPlaces.getData() != null) {
+                Collections.sort(allPlaces.getData(), new Comparator<BBPlace>() {
+                    @Override
+                    public int compare(BBPlace place1, BBPlace place2) {
+                        return place1.getOrder() - place2.getOrder();
+                    }
+                });
+            }
+
+            //Set all places in our BeaconBaconManager
+            BeaconBaconManager.getInstance().setAllPlaces(allPlaces);
         }
-
-        //Set all places in our BeaconBaconManager
-        BeaconBaconManager.getInstance().setAllPlaces(allPlaces);
     }
 }
